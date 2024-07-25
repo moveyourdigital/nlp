@@ -1,0 +1,35 @@
+{
+  "name": "@moveyourdigital/nlp",
+  "version": "0.1.0",
+  "description": "NLP (natural language processing) for server and the browser in TypeScript. All lightweight and super-fast.",
+  "type": "module",
+  "source": "src/index.ts",
+  "exports": {
+    "types": "./dist/nlp.d.ts",
+    "require": "./dist/nlp.cjs",
+    "default": "./dist/nlp.modern.js"
+  },
+  "unpkg": "./dist/nlp.umd.js",
+  "module": "./dist/nlp.esm.js",
+  "main": "./dist/nlp.cjs",
+  "types": "dist/nlp.d.ts",
+  "scripts": {
+    "start": "microbundle watch",
+    "build": "microbundle",
+    "lint": "eslint",
+    "test": "esrun src/all.test.ts"
+  },
+  "keywords": [],
+  "author": "lightningspirit <lightningspirit@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.7.0",
+    "@types/node": "^20.14.2",
+    "eslint": "^9.7.0",
+    "esrun": "^3.2.26",
+    "globals": "^15.8.0",
+    "microbundle": "^0.15.1",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.17.0"
+  }
+}
