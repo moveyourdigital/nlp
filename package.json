@@ -1,27 +1,43 @@
 {
   "name": "@moveyourdigital/nlp",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "NLP (natural language processing) for server and the browser in TypeScript. All lightweight and super-fast.",
   "type": "module",
   "source": "src/index.ts",
   "exports": {
-    "types": "./dist/nlp.d.ts",
-    "require": "./dist/nlp.cjs",
-    "default": "./dist/nlp.modern.js"
+    "types": "./dist/index.d.ts",
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.modern.js"
   },
-  "unpkg": "./dist/nlp.umd.js",
-  "module": "./dist/nlp.esm.js",
-  "main": "./dist/nlp.cjs",
-  "types": "dist/nlp.d.ts",
+  "unpkg": "./dist/index.umd.js",
+  "module": "./dist/index.esm.js",
+  "main": "./dist/index.cjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "microbundle watch",
     "build": "microbundle",
     "lint": "eslint",
-    "test": "esrun src/all.test.ts"
+    "test": "esrun src/index.test.ts"
   },
-  "keywords": [],
-  "author": "lightningspirit <lightningspirit@gmail.com>",
-  "license": "ISC",
+  "keywords": [
+    "nlp",
+    "natural language processing",
+    "sentiment analysis",
+    "word vector",
+    "text classification",
+    "tokenization",
+    "naive bayes"
+  ],
+  "author": "Vitor Carvalho <lightningspirit@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/moveyourdigital/nlp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moveyourdigital/nlp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moveyourdigital/nlp/issues"
+  },
   "devDependencies": {
     "@eslint/js": "^9.7.0",
     "@types/node": "^20.14.2",
@@ -31,5 +47,8 @@
     "microbundle": "^0.15.1",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.17.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   }
 }
