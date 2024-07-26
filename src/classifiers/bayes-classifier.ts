@@ -251,7 +251,26 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
   }
 
   /**
-   * Calculates the probability of a label given a feature vector.
+   * Calculates the probability of a label given a feature vector
+   * using Bayes' theorem which states that:
+   *
+   * P(C|X) = P(X|C) ⋅ P(C) / P(X)
+   * - C: class or label
+   * - X: feature vector
+   *
+   * The use of logarithms and then exponentiation in the algorithm
+   * is a common technique in probabilistic models, especially in
+   * the context of Naive Bayes classifiers. This approach has several advantages:
+   *
+   * - Numerical Stability: Probabilities are often very small numbers, and
+   *   multiplying many small probabilities together can lead to underflow.
+   * - Efficiency: Logarithms convert multiplication operations into addition
+   *   operations, which are computationally simpler and less prone to numerical errors.
+   * - Smoothing: Logarithms allow easier incorporation of smoothing techniques,
+   *   ensuring that zero probabilities do not occur and the model remains robust.
+   *
+   * So, the above is equal to:
+   * P(C∣X) = P(C) ⋅ exp( log P(X∣C) ) = P(C) ⋅ P(X|C) / P(X)
    * 
    * Algorithm was heavily inspired in Chris Umbel's
    * https://github.com/NaturalNode/apparatus
@@ -276,8 +295,6 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
       0 as number
     );
 
-    // p(C) * unlogging the above calculation P(X|C)
-    // as mentioned by Chris Umbel
     return (total / this.stats.corpus) * Math.exp(rest);
   }
 }
