@@ -53,4 +53,32 @@ describe('bayes classification', () => {
       assert(classification[0].score > classification[1].score)
     })
   })
+
+  describe('serializing / restoring', () => {
+    const model = new BayesClassifier<string, string>()
+      .set('smoothing', 0.1)
+      .addDocument({
+        observation: ['one', 'two', 'three', 'four'],
+        label: 'numbers',
+      })
+      .addDocument({
+        observation: ['water', 'earth', 'fire', 'wind'],
+        label: 'elements',
+      })
+      .train()
+      .toJSON({ compact: true })
+
+    test('should match good label', () => {
+      const classifier = new BayesClassifier<string, string>()
+        .restore(model)
+
+      const classification = classifier.classify(
+        ['one', 'water', 'one', 'fire', 'earth']
+      )
+
+      assert.equal(classifier.get('smoothing'), 0.1)
+      assert.deepStrictEqual(classifier.stats, { labels: { numbers: 1, elements: 1 }, corpus: 2 })
+      assert.equal(classification[0].label, 'elements')
+    })
+  })
 })

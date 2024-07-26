@@ -61,7 +61,7 @@ export class Normalizer {
    * @param {Stemmer} stemmer - The stemmer to use for reducing tokens to their root form.
    * @param {StopWords} [stopwords=[]] - Optional array of stop words to remove from the tokens.
    */
-  constructor(private tokenizer: ITokenizer, private stemmer: IStemmer, private stopwords: StopWords = []) {}
+  constructor(private tokenizer: ITokenizer, private stemmer: IStemmer, private stopwords: StopWords = []) { }
 
   /**
    * Normalizes the given text by tokenizing, removing stop words, and stemming each token.
