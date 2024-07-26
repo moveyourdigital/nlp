@@ -1,6 +1,6 @@
 {
   "name": "@moveyourdigital/nlp",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "NLP (natural language processing) for server and the browser in TypeScript. All lightweight and super-fast.",
   "type": "module",
   "source": "src/index.ts",

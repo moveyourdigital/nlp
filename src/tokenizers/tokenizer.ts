@@ -32,13 +32,13 @@ export abstract class Tokenizer {
    * @returns {string[]} An array of tokenized strings.
    */
   abstract tokenize(text: string): string[]
-  
+
   /**
    * Trims the tokens by filtering out any tokens that are `undefined`, `null`, or whitespace-only strings.
    * @param {(string | undefined | null)[]} tokens - An array of tokens to trim.
    * @returns {string[]} An array of trimmed tokens.
    */
-  trim (tokens: (string | undefined | null)[]): string[] {
+  trim(tokens: (string | undefined | null)[]): string[] {
     return tokens.filter((token): token is string => !(token && token.trim()))
   }
 }

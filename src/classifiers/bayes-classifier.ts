@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+import { isObject } from "../utils/is-object.js";
 import { Classification, Classifier, Document, Label, ModelAsJSON, Observation, Stats } from "./classifier.js";
 
 /**
@@ -35,33 +36,39 @@ type Properties = {
 }
 
 /**
+ * Serialized format
+ */
+type Plain<T extends Observation, K extends Label> = {
+  features: Record<T, number>
+  matrix: Partial<Record<K, number[]>>
+  corpus?: Document<T, K>[]
+  properties: Properties
+  stats: Stats<K>
+}
+
+/**
  * Class representing a Naive Bayes classifier.
  * @template T - Type extending Observation
  * @template K - Type extending Label
- * @extends {Classifier<T, K>}
  */
 export class BayesClassifier<T extends Observation, K extends Label> extends Classifier<T, K> {
   /**
    * @private
-   * @type {Partial<Record<T, number>>}
    */
   private features: Map<T, number> = new Map()
 
   /**
    * @private
-   * @type {Partial<Record<K, number[]>>}
    */
   private matrix: Partial<Record<K, number[]>> = {}
 
   /**
    * @private
-   * @type {Document<T, K>[]}
    */
   private corpus: Document<T, K>[] = []
 
   /**
    * @public
-   * @type {Properties}
    */
   private properties: Properties = {
     smoothing: 1.0
@@ -69,7 +76,6 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
 
   /**
    * @private
-   * @type {Stats<K>}
    */
   readonly stats: Stats<K> = {
     labels: {},
@@ -78,9 +84,6 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
 
   /**
    * Sets a property of the classifier.
-   * @param {keyof Properties} prop - The property to set.
-   * @param {Properties[K]} value - The value to set.
-   * @returns {this} The classifier instance.
    */
   set<K extends keyof Properties>(prop: K, value: Properties[K]): this {
     this.properties[prop] = value;
@@ -89,8 +92,6 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
 
   /**
    * Gets a property of the classifier.
-   * @param {keyof Properties} prop - The property to get.
-   * @returns {Properties[K]} The value of property.
    */
   get<K extends keyof Properties>(prop: K): Properties[K] {
     return this.properties[prop];
@@ -126,14 +127,14 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
       label,
       observation,
     });
-    
+
     observation.forEach(
       (token) => this.features.set(
-        token, 
+        token,
         (this.features.get(token) || 0) + 1
       )
     );
-    
+
     return this;
   }
 
@@ -150,9 +151,9 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
         if (label in this.matrix) {
           vector.forEach((value, index) => {
             this.matrix[label]![index] =
-            this.matrix[label]![index] + value;
+              this.matrix[label]![index] + value;
           })
-          
+
         } else {
           this.matrix[label] = vector.map((v) => v + 1 + this.properties.smoothing);
         }
@@ -173,15 +174,22 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
    * @param {ModelAsJSON} data - The model in JSON format.
    * @returns {this} The classifier instance.
    */
-  restore(data: ModelAsJSON | Record<string, unknown>): this {
+  restore(data: ModelAsJSON | Plain<T, K>): this {
     try {
-      const model = typeof data === "string" ? JSON.parse(data) : data;
+      const model = typeof data === "string" ? JSON.parse(data) as Partial<Plain<T, K>> : data;
 
-      Object.getOwnPropertyNames(this).forEach((key) => {
-        if (key in model && typeof model[key] === 'object' && model[key] !== null) {
-          this[key] = model[key]
+      if ('features' in model && isObject<T, number>(model.features)) {
+        Object
+          .entries(model.features)
+          .forEach(([key, value]) => this.features.set(key as T, value as number))
+      }
+
+      ['matrix', 'corpus', 'properties', 'stats'].forEach((prop) => {
+        if (prop in model && isObject(model[prop])) {
+          this[prop] = model[prop]
         }
       })
+
     } catch { /* empty */ }
 
     return this
@@ -199,14 +207,20 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
     serializer,
   }: {
     compact?: boolean
-    serializer?: (x: Record<string, unknown>) => ModelAsJSON
+    serializer?: (x: Plain<T, K>) => ModelAsJSON
   } = {}): ModelAsJSON {
-    return (serializer || JSON.stringify)({
-      features: Object.fromEntries(this.features),
+    const model: Plain<T, K> = {
+      features: Object.fromEntries(this.features) as Record<T, number>,
       matrix: this.matrix,
-      corpus: compact ? [] : this.corpus,
+      properties: this.properties,
       stats: this.stats,
-    })
+    }
+
+    if (!compact) {
+      model.corpus = this.corpus
+    }
+
+    return (serializer || JSON.stringify)(model)
   }
 
   /**
@@ -217,7 +231,7 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
   static of<T extends Observation, K extends Label>(model: ModelAsJSON): BayesClassifier<T, K> {
     return new this<T, K>().restore(model)
   }
-  
+
   /**
    * Converts an observation to a feature vector.
    * @private
@@ -232,7 +246,7 @@ export class BayesClassifier<T extends Observation, K extends Label> extends Cla
         observation.includes(feature as T) ? 1 : 0
       )
     }
-    
+
     return vector
   }
 

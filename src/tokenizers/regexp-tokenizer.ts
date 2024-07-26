@@ -31,7 +31,7 @@ export class RegexpTokenizer extends Tokenizer {
    * Creates an instance of RegexpTokenizer.
    * @param {RegExp} pattern - The regular expression pattern used for tokenization.
    */
-  constructor (private pattern: RegExp) {
+  constructor(private pattern: RegExp) {
     super()
   }
 
