@@ -16,7 +16,7 @@
   "scripts": {
     "start": "microbundle watch",
     "build": "microbundle",
-    "lint": "eslint",
+    "lint": "eslint src",
     "test": "esrun src/index.test.ts"
   },
   "keywords": [
